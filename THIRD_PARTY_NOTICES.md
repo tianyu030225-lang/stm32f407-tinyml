@@ -1,26 +1,24 @@
-# 第三方与发布范围
+# 第三方说明
 
-根目录 [MIT License](LICENSE) 适用于本公开包中项目作者有权授权的自有应用代码和项目配置，不改变外部依赖的许可。
+仓库中的应用代码和项目配置采用 [MIT License](LICENSE)。下面列出的外部依赖没有随仓库分发，也不适用本项目的 MIT 许可。
 
-## 随包提供
+## 仓库里的代码
 
-- App、BSP、Components 的应用实现。
-- AI 应用接口及 `AI/vendor/ai_vendor_port.c` 适配逻辑；该文件调用公开 vendor API，不包含生成模型数据或分类算法库。
-- USER 应用入口、项目配置及 Keil 工程配置。
-- 两个 Python 主机工具和本包说明文档。
+- `App/`、`BSP/`、`Components/`：任务、驱动和数据管理。
+- `AI/`：应用接口和 `AI/vendor/ai_vendor_port.c` 中的 API 适配逻辑，不包含 NanoEdge 生成的模型数据或分类算法库。
+- `USER/`：程序入口、FreeRTOS/外设配置和 Keil 工程。工程文件保留了 Keil 的工具生成标识。
+- `tools/`：两个 Python 主机工具。
 
-Keil 工程保留其工具生成标识。使用某个编译器、RTOS 或库的 API，并不表示这些第三方产品由本项目编写或重新授权。
+## 需要自行准备的依赖
 
-## 不随包分发
-
-| 类别 | 排除范围 | 使用方式 |
+| 依赖 | 文件范围 | 许可与接入 |
 | --- | --- | --- |
-| ST 库和模板、CMSIS | CORE、FWLIB，以及 USER 下 ST 设备/时钟/中断文件 | 自行从对应供应包获取，保留原版权与适用许可，并完成应用接入 |
-| FreeRTOS 内核与端口 | FreeRTOS 整个目录 | 自行获取 V9.0.0，保留该版本 GPLv2 + FreeRTOS exception 等适用条款 |
-| NanoEdge 生成及工具资产 | NanoEdgeAI.h、knowledge.h、libneai.a、原 ZIP、CLI、emulator、manifest 和性能资料 | 自行获取并按适用协议生成和使用；不继承为 MIT |
-| 旧开发板例程 | SYSTEM、HARDWARE | 公共工程已移除无应用调用的旧组，不需要为公开版补回 |
-| 本地材料 | 测试资产、数据集、构建/调试产物、编辑器索引、Git 历史 | 不作为本次源码发布内容 |
+| ST 标准外设库、启动模板和 CMSIS | `CORE/`、`FWLIB/`，以及 `USER/` 下的 ST 设备、时钟和中断文件 | 从对应版本的供应包获取，保留原版权与许可，按依赖说明接入 |
+| FreeRTOS V9.0.0 | `FreeRTOS/` 内核和端口 | 保留该版本的 GPLv2 + FreeRTOS exception 等适用条款 |
+| NanoEdge AI | `NanoEdgeAI.h`、`knowledge.h`、`libneai.a`，以及生成包、CLI、emulator、manifest 和性能资料 | 按 ST 的适用协议获取、生成和使用 |
 
-本包没有对被排除文件作“禁止任何分发”或“均为开源”的统一法律判断；采用外部依赖方式以明确发布范围。下载或自行再分发依赖时，应遵守其实际版本和授权条款。
+具体版本、下载入口和文件放置位置见 [DEPENDENCIES.md](DEPENDENCIES.md)。依赖的下载和再分发均以实际版本的授权条款为准。
 
-获取入口及准确的目标目录见 [DEPENDENCIES.md](DEPENDENCIES.md)。不要把完整私有工程直接覆盖到公开仓库；否则可能重新带入模型、测试数据、受单独许可约束的源码或本机配置。
+旧开发板例程 `SYSTEM/`、`HARDWARE/` 未被应用调用，已从工程中移除，无需补回。原项目的测试数据、模型结果、构建和调试产物、编辑器索引及旧 Git 历史也没有随仓库发布。
+
+补齐依赖时请按文档逐项放置文件。直接用完整本地工程覆盖仓库，可能把模型、测试数据、受单独许可约束的源码或本机配置一并带入提交。
