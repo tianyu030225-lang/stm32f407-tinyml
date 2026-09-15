@@ -61,7 +61,27 @@ R,<window_seq>,<class>,<confidence_milli>,<latency_us>,<alarm_flags>
 python tools/evaluate_model.py --help
 ```
 
-脚本不需要连接模型服务。训练和测试数据应来自独立的 session；模型准确率需要用真实测试数据和对应预测结果计算。仓库没有附带原模型、数据集或性能结果。
+脚本只使用 Python 标准库，不需要连接模型服务。先检查一次采集的数据，在仓库根目录运行：
+
+```sh
+python tools/evaluate_model.py --data-dir data/stable-s1
+```
+
+目录中需要有采集脚本生成的 `session_*.csv` 和 `dataset_metadata.json`。不指定测试 session 时，这条命令只检查数据质量，不计算独立测试得分。
+
+评估完整数据集时：
+
+1. 把训练和测试的采样 CSV 汇总到一个目录，例如 `data/evaluation/`，保留与数据对应的 `dataset_metadata.json`。脚本只读取目录直接包含的 CSV，不递归读取子目录；不要把同一批数据重复放入，也不要修改原有 `session_id`。
+2. 训练集和测试集分别覆盖 STABLE、VIBRATION、IMPACT，并使用不同的 session。通过多次 `--test-session` 指定测试集，其余 session 作为训练集。
+3. 如需计算模型得分，另外提供真实预测 CSV，至少包含 `session_id,window_seq,predicted_class` 三列，覆盖全部测试窗口。预测文件放在采样目录之外，避免被当作采样 CSV 读取。
+
+例如，已有三个独立测试 session 时，可运行下面的命令；将示例名称换成采样 CSV 中实际的 `session_id`：
+
+```sh
+python tools/evaluate_model.py --data-dir data/evaluation --test-session stable-test --test-session vibration-test --test-session impact-test --predictions data/predictions.csv
+```
+
+不提供 `--predictions` 时，只评估阈值基线，不报告 NanoEdge 模型准确率。仓库没有附带原模型、数据集或性能结果，不能直接用示例名称得到评估结果。
 
 ## 测试状态
 
